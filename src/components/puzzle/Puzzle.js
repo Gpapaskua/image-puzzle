@@ -5,27 +5,28 @@ import { useParams } from "react-router";
 /** Components */
 import PuzzleImage from "./PuzzleImage";
 import Timer from "./Timer";
+import ResultsAlert from "./ResultsAlert";
 
 /** UI Components */
-import Button from "./UI-components/Button";
+import Button from "../UI-components/Button";
 
 /** Packages */
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 /** Services */
+import { addNewGameResult, getAllResults } from "../../service/FbServices";
 import {
   checkCompleted,
   cleanPuzzleData,
   createPuzzlePieces,
   shuffleArray,
-} from "../service/puzzleDataHandler";
+} from "../../service/puzzleDataHandler";
 
 /** Assets */
-import image from "../assets/house.png";
-import user from "../assets/user.jpg"
-import { addNewGameResult, getAllResults } from "../service/FbServices";
-import Results from "./Results";
+import image from "../../assets/house.png";
+import user from "../../assets/user.jpg"
+
 
 const MySwal = withReactContent(Swal); // Initialize Sweet Alert
 
@@ -41,14 +42,14 @@ const Puzzle = () => {
   const [boxes, setBoxes] = useState(JSON.parse(localStorage.getItem("puzzle")) || createPuzzlePieces(level));
 
 
-  const blockWidth = 700 / parseInt(level);
-  const blockHeight = 600 / parseInt(level);
-  const order = boxes.map((box) => box.correctPosition);
+  const blockWidth = 700 / parseInt(level);  // Calculate width of puzzle piece
+  const blockHeight = 600 / parseInt(level); // Calculate height of puzzle piece
+  const order = boxes.map((box) => box.correctPosition); // Get order of pieces 
 
   const isCompleted = checkCompleted(order); // Check if game is finished
-  const username = localStorage.getItem("nickname") || null; // Get use nickname from localstorage
-  const userId = localStorage.getItem("userId");
-  const time = localStorage.getItem("puzzlePlayTime") || 1;
+  const username = localStorage.getItem("nickname") || null; // Set user nickname from localstorage
+  const userId = localStorage.getItem("userId"); // Set firestore userId from localstorage 
+  const time = localStorage.getItem("puzzlePlayTime") || 1; // Set puzzle play time from localstorage
 
 
   /** Handle puzzle pieces swap */
@@ -93,6 +94,17 @@ const Puzzle = () => {
     setPlayTime((prevPlayTime) => prevPlayTime + 10);
   };
 
+  /** Save game level */
+  useEffect(() => {
+    localStorage.setItem("puzzleLevel", level); 
+    setBoxes(createPuzzlePieces(level));
+    setPlayTime(1);
+    
+    return  () => {
+        cleanPuzzleData();
+    }
+  }, [level]);
+
   useEffect(() => {
     if (showOriginalImage) {
       MySwal.fire({
@@ -118,14 +130,7 @@ const Puzzle = () => {
   }, [showOriginalImage]);
 
 
-  /** Save game level */
-  useEffect(() => {
-    localStorage.setItem("puzzleLevel", level);
 
-    return  () => {
-        cleanPuzzleData();
-    }
-  }, [level]);
 
   /** Get and previous game results from firestore */
   const getResults = useCallback(
@@ -135,45 +140,20 @@ const Puzzle = () => {
       await addNewGameResult(userId, level, time, imageUrl);
       const results = await getAllResults(userId);
       
-        setTimeout(
-            () =>
               MySwal.fire({
                 title: "<strong>Game Finished!</strong>",
                 icon: "success",
-                html: (
-                  <div className="overflow-hidden">
-                    <p>Total Time {time} seconds.</p>
-                    <p className="text-info">Your Results</p>
-                    <div className="row justify-content-center pb-2">
-                      <div className="col-lg-3">
-                        Level
-                      </div>
-                      <div className="col-lg-3">
-                        Time
-                      </div>
-                      <div className="col-lg-3">
-                        Image
-                      </div>
-                    {
-                      results && results.map((res, index) => {
-                        return <Results result={res} key={index} />
-                      })
-                    }
-                    </div>
-                    <Button text="Home" className="start-button" onClickHandler={finishGame} />
-                    <Button text="Try again" className="start-button mx-3" onClickHandler={restartGame} />
-                   
-                  </div>
-                ),
-    
+                html: <ResultsAlert 
+                        time={time} 
+                        results={results} 
+                        finishGame={finishGame} 
+                        restartGame={restartGame}/>,
                 showCloseButton: false,
                 showCancelButton: false,
                 focusConfirm: false,
                 showConfirmButton: false,
                 allowOutsideClick: false,
-              }),
-            1000
-          );
+              })
     },
     [userId, finishGame, level, restartGame, time],
   )
@@ -185,7 +165,7 @@ const Puzzle = () => {
     }
   }, [isCompleted, restartGame, finishGame, playTime, getResults]);
 
-  
+  console.log(blockHeight, blockWidth, level)
 
   
 
@@ -211,7 +191,7 @@ const Puzzle = () => {
           setPlayTime={setPlayTime}
           order={order}
             />
-            <Button text="Original Picture" className="start-button" onClickHandler={toggleOriginalImage} />
+            <Button text="Original Picture" className="start-button mx-2" onClickHandler={toggleOriginalImage} />
         </div>
           :
           null

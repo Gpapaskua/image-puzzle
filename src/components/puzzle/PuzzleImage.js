@@ -1,10 +1,10 @@
 import React from 'react'
 
 /** Services */
-import { calculateBackgroundHeight, calculateBackgroundWidth } from '../service/puzzleDataHandler';
+import { calculateBackgroundHeight, calculateBackgroundWidth } from '../../service/puzzleDataHandler';
 
 /** Assets */
-import image from '../assets/house.png'
+import image from '../../assets/house.png'
 
 const PuzzleImage = ({ part, updateBoxesOrder, pieceToShuffle, setPieceToShuffle, width, height, index, level }) => {
 

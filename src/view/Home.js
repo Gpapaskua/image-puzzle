@@ -10,7 +10,7 @@ import { addNewPlayer } from '../service/FbServices';
 import { checkImage, cleanPuzzleData, puzzleLevels } from '../service/puzzleDataHandler';
 
 /** UI Components */
-import Button from './UI-components/Button';
+import Button from '../components/UI-components/Button';
 
 const MySwal = withReactContent(Swal); // Initialize Sweet Alert
 
@@ -27,7 +27,7 @@ const Home = () => {
         e.preventDefault();
         if(nickname !== ""){
             setDisabled(true);
-            if(!localStorage.getItem("userId")){
+            if(!localStorage.getItem("userId") || nickname !== localStorage.getItem("nickname")){
                 const id = await addNewPlayer(nickname);
                 localStorage.setItem("nickname", nickname);
                 localStorage.setItem("userId", id);

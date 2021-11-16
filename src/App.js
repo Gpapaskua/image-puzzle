@@ -1,7 +1,7 @@
 import React  from 'react'
 import { Route, Routes } from 'react-router'
-import Home from './components/Home'
-import Puzzle from './components/Puzzle'
+import Home from './view/Home'
+import Puzzle from './components/puzzle/Puzzle'
 
 
 const App = () => {
