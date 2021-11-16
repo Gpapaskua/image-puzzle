@@ -98,7 +98,6 @@ const Home = () => {
                 <form onSubmit={handleSubmit} className="w-50">
                 <div className="d-flex flex-column align-items-center">
                     <div className="w-100">
-
                         <label htmlFor="nickname">Pick nickname</label>
                         <input 
                             type="text" 

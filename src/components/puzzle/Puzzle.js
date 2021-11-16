@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
 
 /** Components */
@@ -96,9 +96,12 @@ const Puzzle = () => {
 
   /** Save game level */
   useEffect(() => {
-    localStorage.setItem("puzzleLevel", level); 
+    if(level !== localStorage.getItem("puzzleLevel")){
+      localStorage.setItem("puzzleLevel", level); 
     setBoxes(createPuzzlePieces(level));
     setPlayTime(1);
+    }
+    
     
     return  () => {
         cleanPuzzleData();
@@ -170,18 +173,13 @@ const Puzzle = () => {
   
 
   return (
-    <div className="container-fluid d-flex flex-column align-items-center pb-5">
-      <div className="d-flex w-100 justify-content-between py-2">
-        {
-          username ? 
-            <div className="align-self-end">
-            <img src={user} alt="user" id="user-logo" className="rounded" />
-            <span className="mx-3 lead text-white">{username}</span>
-            </div>
-            :
-            null
-        }
+    <div className="d-flex flex-column align-items-center pb-5">
+      <div className="d-flex w-100 justify-content-between py-2 mb-3 rounded-bottom">
+        <div className="d-flex align-items-center">
         
+        
+        <Link className="text-white btn btn-info shadow px-3 mx-3" to="/">Home</Link>
+       </div>
 
        { 
        !isCompleted ?  
@@ -195,7 +193,19 @@ const Puzzle = () => {
         </div>
           :
           null
-       } 
+       }
+
+       {
+          
+          username ? 
+            <div>
+            <img src={user} alt="user" id="user-logo" className="rounded" />
+            <span className="mx-3 lead text-white">{username}</span>
+            </div>
+            :
+            null
+         
+        } 
         
       </div>
 
