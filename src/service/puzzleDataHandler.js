@@ -43,7 +43,7 @@ export const createPuzzlePieces = (level) => {
 
 /** Check if image url is valid */
 export function checkImage(imageSrc, good, bad) {
-    var img = new Image();
+    let img = new Image();
     img.onload = good; 
     img.onerror = bad;
     img.src = imageSrc;
